@@ -3,6 +3,14 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class Credentials_model extends CI_Model
 {
+    function accessGranted()
+    {
+        if (!isset($_SESSION['credentials_id'])) {
+            session_destroy();
+            redirect("SignIn");
+        }
+    }
+
     function getUserId()
     {
         $userTable = $this->Main_model->get_where('employee', 'credentials_id', $_SESSION['credentials_id'])->row();

@@ -8,6 +8,8 @@ class Dashboard extends CI_Controller
     {
         parent::__construct();
         $this->load->model('Main_model');
+        $this->load->model('Credentials_model');
+        $this->Credentials_model->accessGranted();
     }
 
     public function index()

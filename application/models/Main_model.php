@@ -32,30 +32,6 @@ class Main_model extends CI_Model
 		return $random_string;
 	}
 
-
-	function getJsonData($apiUrl)
-	{
-		$client = curl_init($apiUrl);
-
-		curl_setopt($client, CURLOPT_RETURNTRANSFER, true); //wil give the json
-
-		$response = curl_exec($client);
-
-		curl_close($client); //close the resources. 
-
-		$result = json_decode($response, true);
-
-		// var_dump($result);
-		$this->Main_model->showNormalArray($result);
-	}
-
-	//every time you will click a new nav. the system will let you 
-	//login again to access the voucher sending
-	function removeUserVoucherAuthenticated()
-	{
-		unset($_SESSION['userVoucherAuthenticated']);
-	}
-
 	function deactivateActivators()
 	{
 		//SET PAGE ACTIVATORS
@@ -112,30 +88,6 @@ class Main_model extends CI_Model
 		}
 	}
 
-	function accessGranted()
-	{
-		$accountId = isset($_SESSION['account_id']);
-		$authenticator = isset($_SESSION['vc555']);
-
-
-
-		if (($accountId != Null) && ($authenticator != Null)) {
-			return true;
-		} else {
-			$this->session->set_userdata('notLogin', 1);
-		}
-
-
-		if (isset($_SESSION['notLogin'])) {
-			unset($_SESSION['notLogin']);
-			session_destroy();
-
-			redirect('Main_controller');
-		}
-		// echo "terminated";
-
-	}
-
 	function get($table, $order_by)  //ascending order
 	{
 		$this->db->order_by($order_by, "desc");
@@ -143,57 +95,29 @@ class Main_model extends CI_Model
 		return $query;
 	}
 
-	function getNameSliced($table, $column, $teacherId)
-	{
-		$table = $this->Main_model->get_where($table, $column, $teacherId);
-
-		foreach ($table->result() as $row) {
-			$data['firstname'] = $row->firstname;
-			$data['lastname'] = $row->lastname;
-		}
-		return $data;
-	}
-
 	function getFullName($table, $column, $teacherId)
 	{
-
 		$table = $this->get_where($table, $column, $teacherId);
-
-		if (count($table->result_array()) != 0) {
-			$table = $table->row();
-			$firstname = $table->firstname;
-			$middlename = $table->middlename;
-			$lastname = $table->lastname;
-
-			return "$firstname $middlename $lastname";
-		} else {
-			//wala siyang nahanap 
-			return null;
-		}
+		if (count($table->result_array()) == 0) return null;
+		$table = $table->row();
+		return "$table->firstname $table->middlename $table->lastname";
 	}
 
 	function getFullNameSliced($table, $column, $teacherId)
 	{
 		$table = $this->Main_model->get_where($table, $column, $teacherId);
 
-		foreach ($table->result() as $row) {
-			$data['firstname'] = ucfirst($row->firstname);
-			$data['lastname'] = ucfirst($row->lastname);
-		}
+		if (count($table->result_array()) == 0) return Null;
+		$table = $table->row();
+		$data['firstname'] = $table->firstname;
+		$data['middlename'] = $table->middlename;
+		$data['lastname'] = $table->lastname;
 		return $data;
 	}
 
 	function get_where($table, $db_column_name, $value)
 	{
 		$this->db->where($db_column_name, $value);
-		$query = $this->db->get($table);
-		return $query;
-	}
-
-	function getWhereLimit($table, $db_column_name, $value)
-	{
-		$this->db->where($db_column_name, $value);
-		$this->db->limit(5);
 		$query = $this->db->get($table);
 		return $query;
 	}
@@ -226,36 +150,6 @@ class Main_model extends CI_Model
 		echo "<pre>";
 		print_r($array->result_array());
 		echo "</pre>";
-	}
-
-	function alertDanger($sessionName, $alert_message)
-	{
-		if (isset($_SESSION["$sessionName"])) {
-			echo "<div class='alert alert-danger' id='alert'>";
-			echo    $alert_message;
-			echo "</div>";
-			unset($_SESSION["$sessionName"]);
-		}
-	}
-
-	function alertSuccess($sessionName, $alert_message)
-	{
-		if (isset($_SESSION["$sessionName"])) {
-			echo "<div class='alert alert-success' id='alert'>";
-			echo    $alert_message;
-			echo "</div>";
-			unset($_SESSION["$sessionName"]);
-		}
-	}
-
-	function alertWarning($sessionName, $alert_message)
-	{
-		if (isset($_SESSION["$sessionName"])) {
-			echo "<div class='alert alert-warning' id='alert'>";
-			echo    $alert_message;
-			echo "</div>";
-			unset($_SESSION["$sessionName"]);
-		}
 	}
 
 	function seeAllSessions()
@@ -314,14 +208,5 @@ class Main_model extends CI_Model
 	{
 		$this->session->set_userdata($sessionName, 1);
 		redirect($redirect);
-	}
-
-	function formValidation($postNames)
-	{
-		foreach ($postNames as $key => $value) {
-			$this->form_validation->set_rules($key, $value, 'required');
-		}
-
-		return $this->form_validation->run();
 	}
 }
