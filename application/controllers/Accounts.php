@@ -20,4 +20,9 @@ class Accounts extends CI_Controller
         $this->load->library('view_manipulation', $params);
         $this->view_manipulation->renderViewWithLayout();
     }
+
+    public function GetAllUsers()
+    {
+        echo json_encode($this->Main_model->get("employee", "employee_id")->result_array());
+    }
 }

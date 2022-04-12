@@ -8,5 +8,3 @@ async function logout() {
     const resp = await Credentials.Logout();
     console.log(resp);
 }
-
-logout();

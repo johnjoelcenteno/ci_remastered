@@ -5,4 +5,6 @@
 	<input type="password" placeholder="Password" id="password">
 	<br><br>
 	<button>Login</button>
+
+	<div id="grid"></div>
 </div>

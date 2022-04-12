@@ -62,7 +62,7 @@ $(document).ready(function () {
             group: [{ field: "title_location" }],
             transport: {
                 read: {
-                    url: `${baseUrl}InterviewRatingManagement/getAllInterviewsForSecretariat`,
+                    url: `${baseUrl}`,
                     contentType: "json",
                     type: "GET"
                 },
@@ -72,8 +72,8 @@ $(document).ready(function () {
             },
 
             schema: {
-                data: (resp) => processResp(resp),
-                total: (resp) => JSON.parse(resp).length,
+                data: () => [],
+                total: () => 5,
                 model: {
                     id: "rated_applicant_id",
                     fields: {
@@ -102,7 +102,7 @@ $(document).ready(function () {
             requestEnd: function (e) {
                 type = e.type;
                 if (type != "read") {
-                    $('#grid').data("kendoGrid").dataSource.read(e);
+                    // $('#grid').data("kendoGrid").dataSource.read(e);
 
                     let title = type == 'update' ? "Employee updated successfully" : "Employee deleted successfully";
                     if (type == 'create') title = 'Employee created successfully';
