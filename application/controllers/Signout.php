@@ -6,7 +6,6 @@ class Signout extends CI_Controller
     public function index()
     {
         session_destroy();
-        echo "session destroyed";
-        redirect("SignIn");
+        echo "success";
     }
 }

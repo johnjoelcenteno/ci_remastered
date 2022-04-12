@@ -17,24 +17,40 @@ class Guid {
 }
 
 
+class Request {
+    endpoint = baseUrl;
 
+    constructor(endpoint, toBeSentObj = {}) {
+        this.endpoint += endpoint;
+        this.toBeSentObj = toBeSentObj;
+    }
+
+    SendPost() {
+        return new Promise(resolve => $.post(this.endpoint, this.toBeSentObj, resp => resolve(resp)));
+    }
+
+    Get() {
+        return new Promise(resolve => $.get(this.endpoint, resp => resolve(resp)));
+    }
+
+}
 
 class Credentials {
-    static idUsernameInput = "";
-    static idPasswordInput = "";
-    static idConfirmPasswordInput = "";
+    static usernameSelector = "";
+    static passwordSelector = "";
+    static confirmPasswordSelector = "";
 
     static loginEndpoint = "";
     static logoutEndpoint = "";
 
     static ValidateConfimPassword() {
-        if (this.idPasswordInput == "" || this.idConfirmPasswordInput == "") {
+        if (this.passwordSelector == "" || this.confirmPasswordSelector == "") {
             console.error("null static properties");
             throw "null static properties";
         }
 
-        const passwordInput = document.getElementById(this.idPasswordInput);
-        const confirmPasswordInput = document.getElementById(this.idConfirmPasswordInput);
+        const passwordInput = document.getElementById(this.passwordSelector);
+        const confirmPasswordInput = document.getElementById(this.confirmPasswordSelector);
 
         const passwordValue = passwordInput.value;
         const confirmPasswordValue = confirmPasswordInput.value;
@@ -55,11 +71,16 @@ class Credentials {
         return true;
     }
 
-    static Login() {
-
+    static async Login(username, password) {
+        if (this.loginEndpoint == "") throw "Invalid login endpoint";
+        if (username == "" | username == null | password == "" | password == null) throw "Username Password should not be null";
+        const request = new Request(this.loginEndpoint, { username, password });
+        return await request.SendPost();
     }
 
-    static Logout() {
-
+    static async Logout() {
+        const request = new Request(this.logoutEndpoint);
+        const resp = await request.Get();
+        if (resp == "success") window.location.replace(this.loginEndpoint);
     }
 }
